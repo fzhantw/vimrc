@@ -1,13 +1,9 @@
 call pathogen#infect()
-let mapleader = "\<Space>"
+let mapleader=","
 set nocompatible
-set nomodeline
 set viminfo='1000,f1,:1000,/1000
 set history=1000
 
-cd ~/Projects
-
-let pair_program_mode = 0
 
 "------  Visual Options  ------
 syntax on
@@ -18,14 +14,11 @@ set ruler
 set statusline=%<%f\ %h%m%r%=%{fugitive#statusline()}\ \ %-14.(%l,%c%V%)\ %P
 let g:buftabs_only_basename=1
 let g:buftabs_marker_modified = "+"
-set colorcolumn=120
 
 " Toggle whitespace visibility with ,s
 nmap <Leader>s :set list!<CR>
-set listchars=tab:▸\ ,trail:·,extends:❯,precedes:❮,nbsp:×
-:set list " Enable by default
-
-" <Leader>L = Toggle line numbers
+set listchars=tab:▸\ ,trail:·,extends:❯,precedes:❮,nbsp:×,eol:¬
+" ,L = Toggle line numbers
 map <Leader>L :set invnumber<CR>
 
 " New splits open to right and bottom
@@ -40,6 +33,8 @@ set hidden
 filetype indent on
 filetype plugin on
 set autoindent
+"set expandtab
+set wildignore=.svn,CVS,.git,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpg,*.png,*.xpm,*.gif,node_modules/*
 
 "allow deletion of previously entered data in insert mode
 set backspace=indent,eol,start
@@ -50,13 +45,10 @@ cmap w!! %!sudo tee > /dev/null %
 " F2 = Paste Toggle (in insert mode, pasting indented text behavior changes)
 set pastetoggle=<F2>
 
-" The search for the perfect color scheme...
-map <silent> <Leader>x :RandomColorScheme<CR>
-
-" <Leader>v = Paste
+" ,v = Paste
 map <Leader>v "+gP
 
-" <Leader>c = Copy
+" ,c = Copy
 map <Leader>c "+y
 
 " Accidentally pressing Shift K will no longer open stupid man entry
@@ -66,14 +58,11 @@ noremap K <nop>
 nmap <silent> <Leader>ev :e $MYVIMRC<CR>
 nmap <silent> <Leader>es :so $MYVIMRC<CR>
 
-" When pressing <Leader>cd switch to the directory of the open buffer
+" When pressing ,cd switch to the directory of the open buffer
 map ,cd :cd %:p:h<CR>
 
 " Wtf is Ex Mode anyways?
 nnoremap Q <nop>
-
-" Annoying window
-map q: :q
 
 "------  Text Navigation  ------
 " Prevent cursor from moving to beginning of line when switching buffers
@@ -89,7 +78,7 @@ vnoremap L g_
 
 
 "------  Window Navigation  ------
-" <Leader>hljk = Move between windows
+" ,hljk = Move between windows
 nnoremap <Leader>h <C-w>h
 nnoremap <Leader>l <C-w>l
 nnoremap <Leader>j <C-w>j
@@ -103,14 +92,11 @@ noremap <silent> <C-h> :bprev<CR>
 noremap <silent> <C-right> :bnext<CR>
 noremap <silent> <C-l> :bnext<CR>
 
-" <Leader>q Closes the current buffer
+" ,q Closes the current buffer
 nnoremap <silent> <Leader>q :Bclose<CR>
 
-" <Leader>Q Closes the current window
+" ,Q Closes the current window
 nnoremap <silent> <Leader>Q <C-w>c
-
-" <Leader>Ctrl+q Force Closes the current buffer
-nnoremap <silent> <Leader><C-q> :Bclose!<CR>
 
 
 "------  Searching  ------
@@ -119,23 +105,29 @@ set ignorecase
 set smartcase
 set hlsearch
 
-" Clear search highlights when pressing <Leader>b
+" Clear search highlights when pressing ,b
 nnoremap <silent> <leader>b :nohlsearch<CR>
 
 " http://www.vim.org/scripts/script.php?script_id=2572
-" <Leader>a will open a prmompt for a term to search for
+" ,a will open a prmompt for a term to search for
 noremap <leader>a :Ack 
 
-" <Leader>A will close the new window created for that ack search
+" ,A will close the new window created for that ack search
 noremap <leader>A <C-w>j<C-w>c<C-w>l
 
-let g:ackprg="ack -H --nocolor --nogroup --column"
+let g:ackprg="ack -H --nocolor --nogroup --column --type-add php=.tpl"
+
+" When searching for words with * and navigating with N/n, keep line centered vertically
+"nnoremap n nzz
+"nnoremap N Nzz
+"nnoremap * *zz
+"nnoremap # #zz
+"nnoremap g* g*zz
+"nnoremap g# g#zz
 
 " CtrlP will load from the CWD, makes it easier with all these nested repos
 let g:ctrlp_working_path_mode = ''
-
-" CtrlP won't show results from node_modules
-let g:ctrlp_custom_ignore = '\v[\/](node_modules|coverage|target|dist)|(\.(swp|ico|git|svn|png|jpg|gif|ttf))$'
+let g:ctrlp_custom_ignore = 'bower_components'
 
 "type S, then type what you're looking for, a /, and what to replace it with
 nmap S :%s//g<LEFT><LEFT>
@@ -143,15 +135,10 @@ vmap S :s//g<LEFT><LEFT>
 
 
 "------  NERDTree Options  ------
-let NERDTreeIgnore=['CVS','\.dSYM$', '.git', '.DS_Store', '*.swp', '*.swo', '*.swo']
+let NERDTreeIgnore=['CVS','\.dSYM$']
 
 "setting root dir in NT also sets VIM's cd
 let NERDTreeChDirMode=2
-
-" Toggle visibility using <Leader>n
-noremap <silent> <Leader>n :NERDTreeToggle<CR>
-" Focus on NERDTree using <Leader>m
-noremap <silent> <Leader>m :NERDTreeFocus<CR>
 
 " These prevent accidentally loading files while focused on NERDTree
 autocmd FileType nerdtree noremap <buffer> <c-left> <nop>
@@ -162,11 +149,20 @@ autocmd FileType nerdtree noremap <buffer> <c-l> <nop>
 " Open NERDTree if we're executing vim without specifying a file to open
 autocmd vimenter * if !argc() | NERDTree | endif
 
+" Close if only NERDTree open
+"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
 " Hides "Press ? for help"
 let NERDTreeMinimalUI=1
 
-" Shows invisibles
-let g:NERDTreeShowHidden=1
+"------  Tagbar Plugin Options  ------
+" http://adamyoung.net/Exuberant-Ctags-OS-X
+" http://www.vim.org/scripts/script.php?script_id=273
+let g:tagbar_width=26
+noremap <silent> <Leader>y :TagbarToggle<CR>
+
+" ,ct = Builds ctags
+"map <Leader>ct :! /usr/local/bin/ctags -R *<CR>
 
 
 "------  Fugitive Plugin Options  ------
@@ -183,23 +179,23 @@ nnoremap <Leader>gd :Gdiff<CR>
 
 
 "------  Text Editing Utilities  ------
-" <Leader>T = Delete all Trailing space in file
+" ,T = Delete all Trailing space in file
 map <Leader>T :%s/\s\+$//<CR>
 
-" <Leader>U = Deletes Unwanted empty lines
+" ,U = Deletes Unwanted empty lines
 map <Leader>U :g/^$/d<CR>
 
-" <Leader>R = Converts tabs to spaces in document
+" ,R = Converts tabs to spaces in document
 map <Leader>R :retab<CR>
+
+" Deletes trailing space in file upon write
+" autocmd BufWritePre * :%s/\s\+$//e
 
 
 "------  JSON Filetype Settings  ------
 au BufRead,BufNewFile *.json set filetype=json
 let g:vim_json_syntax_conceal = 0
 nmap <silent> =j :%!python -m json.tool<CR>:setfiletype json<CR>
-autocmd BufNewFile,BufRead *.webapp set filetype=json
-autocmd BufNewFile,BufRead *.jshintrc set filetype=json
-autocmd BufNewFile,BufRead *.eslintrc set filetype=json
 
 
 "------  CoffeeScript Filetype Settings  ------
@@ -209,25 +205,14 @@ au BufWritePost *.coffee silent make!
 autocmd QuickFixCmdPost * nested cwindow | redraw!
 
 
-"------  JSX Filetype Settings ------
-autocmd! BufEnter *.jsx let b:syntastic_checkers=['eslint']
-autocmd! BufEnter *.js let b:syntastic_checkers=['eslint']
+"------  PHP Filetype Settings  ------
+" ,p = Runs PHP lint checker on current file
+map <Leader>p :! php -l %<CR>
 
+" ,P = Runs PHP and executes the current file
+map <Leader>P :! php -q %<CR>
 
-"------  EJS Filetype Settings  ------
-au BufNewFile,BufRead *.ejs set filetype=html
-
-
-"------  SCSS Filetype Settings  ------
-autocmd FileType scss set iskeyword+=-
-
-
-"------  Airline Settings ------
-let g:airline_left_sep=''
-let g:airline_right_sep=''
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#left_sep = ' '
-let g:airline#extensions#tabline#left_alt_sep = ' '
+au FileType php set omnifunc=phpcomplete#CompletePHP
 
 
 "------  GUI Options  ------
@@ -237,23 +222,18 @@ if has("gui_running")
 
 	" Highlights the current line background
 	set cursorline
-	colorscheme gotham
+	colorscheme Tomorrow-Night
 
 	"autocmd VimEnter * TagbarOpen
 
-	" Open VIM in fullscreen window
-	set lines=200 columns=500
-
-	" Toggle fullscreen
-	map <silent> <leader>w :set lines=200 columns=500<CR>
-
-	" Build all help tags (slower launch, but I run GUI vim like once per day)
-	call pathogen#helptags()
+	"Invisible character colors
+	highlight NonText guifg=#4a4a59
+	highlight SpecialKey guifg=#4a4a59
 
 	if has("gui_macvim") " OS X
 		"set guifont=Monaco:h14
-		set guifont=Monaco:h10
-		set noantialias
+		set guifont=Monaco:h12
+		"set noantialias
 		"set transparency=15
 
 		" Swipe to move between bufers :D
@@ -262,11 +242,6 @@ if has("gui_running")
 
 		" Cmd+Shift+N = new buffer
 		map <silent> <D-N> :enew<CR>
-
-		" Cmd+P = CtrlP
-		" TODO: This doesn't actually work, still opens Print dialog
-		macmenu File.Print key=<nop>
-		nnoremap <silent> <D-p> :CtrlP<CR>
 
 		" Cmd+t = new tab
 		nnoremap <silent> <D-t> :tabnew<CR>
@@ -287,22 +262,6 @@ if has("gui_running")
 
 		" OS X probably has ctags in a weird place
 		let g:tagbar_ctags_bin='/usr/local/bin/ctags'
-
-		" Pair Program mode, so that my coworkers can read my screen ;)
-		nnoremap <leader>p :call PairProgramMode()<cr>
-		function! PairProgramMode()
-			if g:pair_program_mode
-				let g:pair_program_mode = 0
-				set guifont=Monaco:h10
-				set noantialias
-				set lines=200 columns=500
-			else
-				set guifont=Monaco:h15
-				set antialias
-				set lines=200 columns=500
-				let g:pair_program_mode = 1
-			endif
-		endfunction
 
 	elseif has("gui_gtk2") " Linux
 		set guifont=monospace\ 9
@@ -336,8 +295,25 @@ else
 	set mouse=a
 endif
 
-
 "------  Local Overrides  ------
 if filereadable($HOME.'/.vimrc_local')
 	source $HOME/.vimrc_local
 endif
+
+"------  My Shortcut      ------
+map tv :source ~/.vimrc<CR>
+map tt :tabnext<CR>
+map tr :tabprevious<CR>
+map tn :tabnew<CR>
+map <C-l>/ ^i//<ESC>
+map <C-l>? ^xx
+map tl :vertical resize 50<CR>
+map th :vertical resize 100<CR>
+map tw :NERDTreeToggle<CR>
+nnoremap <Leader><Leader> @a
+nnoremap <Leader>m @s
+nnoremap <Leader>cc "cp
+nnoremap <Leader>vv "vp
+
+noremap <silent> <Leader>nnu :set invnumber<CR>
+noremap <silent> <Leader>npa :set inpaste<CR>
